@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "synthlab"
+version = "0.1.0"
+description = "Offline, deterministic multi-table synthetic data workbench"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6.0"]
+authors = [{ name = "synthlab contributors" }]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[project.scripts]
+synthlab = "synthlab.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["synthlab*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

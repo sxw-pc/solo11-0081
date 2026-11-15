@@ -1,0 +1,28 @@
+dataset: invalid_bad_reference
+seed: 8
+version: "1.0.0"
+tables:
+  - name: parents
+    rows: 3
+    primary_key: parent_id
+    columns:
+      - name: parent_id
+        type: sequence
+        nullable: false
+        start: 1
+      - name: label
+        type: string
+        nullable: false
+        pattern: "P-{seq:02d}"
+  - name: children
+    rows: 3
+    primary_key: child_id
+    columns:
+      - name: child_id
+        type: sequence
+        nullable: false
+        start: 1
+      - name: parent_label
+        type: foreign_key
+        nullable: false
+        references: parents.label
