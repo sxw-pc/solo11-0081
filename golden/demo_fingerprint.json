@@ -1,6 +1,6 @@
 {
   "blueprint_sha256": "092c5b25ebbeb2dfd8a04b7ac1f91165ece0d70fa939b7361f2f5e94bd08640f",
-  "content_fingerprint": "453cc399fd804aefc0bc66d97cdad2e89c77a4296b0a55d115f39852f1867401",
+  "content_fingerprint": "e4caa7a6ec7b35cf9cc9e795dca219142d9501cf99fe61033241dc9387ede823",
   "dataset": "demo_shop",
   "seed": 20251115,
   "table_data_sha256": {
