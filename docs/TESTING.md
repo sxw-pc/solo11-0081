@@ -18,7 +18,7 @@ python -m pytest
 python -m pytest -q
 ```
 
-当前基线：**85 passed**，本机约 6 秒完成。测试不需要网络。
+当前基线：**122 passed**，本机约 6 秒完成。测试不需要网络。
 
 ## 2. 测试分层
 
@@ -35,6 +35,7 @@ python -m pytest -q
 | `test_verifier.py` | 独立复读、文件缺失、篡改文件、篡改数据、蓝图哈希、报告 |
 | `test_cli.py` | demo / generate / plan / verify、退出码、只读 preview、重复生成 |
 | `test_golden.py` | 演示蓝图的内容指纹和表数据摘要基线 |
+| `test_distribution.py` | distribute 声明、可行性、两条分配路线、逐格式篡改检测 |
 
 共享 fixture 在 `tests/conftest.py`：
 
@@ -74,7 +75,7 @@ python -m synthlab plan --spec fixtures/demo/dataset.yaml
 
 - demo 退出码 0；
 - 内容指纹为：
-  `453cc399fd804aefc0bc66d97cdad2e89c77a4296b0a55d115f39852f1867401`；
+  `e4caa7a6ec7b35cf9cc9e795dca219142d9501cf99fe61033241dc9387ede823`；
 - verifier 输出 `41 passed, 0 failed`；
 - `out/demo/verification.json` 的 `status` 为 `pass`。
 

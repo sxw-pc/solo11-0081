@@ -95,6 +95,33 @@ YAML 裸写 `boundary: [null]` 时，PyYAML 会将 `null` 解析为 Python `None
 - `uuid` 不使用系统随机源，不使用真实 UUID 库随机源，只从派生 RNG 产生 16 字节。
 - 所有生成器只接受显式 RNG；不读全局随机状态。
 
+### 2.5 外键分布声明（distribute）
+
+`foreign_key` 列可声明 `distribute`，按父表某个离散属性的取值精确约束子表外键分布：
+
+```yaml
+- name: customer_id
+  type: foreign_key
+  nullable: false
+  references: customers.customer_id
+  distribute:
+    by: region              # 父表上的离散属性列（必填）
+    quotas: {east: 5, west: 2}      # 每个属性值分到的子行数；与 proportions 二选一
+    # proportions: {east: 0.7, west: 0.3}   # 或者按比例（最大余数法取整）
+    unlisted: forbid        # 未列出的父属性值：forbid（默认）禁止引用 / allow 吸收剩余行
+    route: hash             # 同类多键时的分配路线：hash（默认，稳定哈希）/ capacity（按容量优先）
+```
+
+规则：
+
+- `by` 必须是被引用父表上的离散列（`enum` / `string` / `bool` / `int` / `sequence` / `foreign_key`）；父属性与键的对应关系只取父表实际生成值。
+- `quotas` 为非负整数映射；`unlisted: forbid` 时其和必须等于可分配行数，`allow` 时不得超过；`proportions` 为正数映射，和不超过 1，`forbid` 时必须恰好为 1。
+- 可分配行数 = 子表行数 − 强制 NULL 行数（`boundary: [null]`）。声明 `distribute` 的列 `null_rate` 必须为 0；强制 NULL 只能通过 `boundary: [null]` 表达。
+- 不支持自引用外键。
+- 唯一约束容量计入可行性：单列唯一时每个父键至多出现一次；复合唯一时每键容量受同组其他列的可区分取值数限制。配额超过容量、属性值无父键、边界强制值超出配额或落入未列值，都判不可行。
+- 可行性在子表生成前根据父表实际生成结果判定；不可行蓝图在导出前报 `GEN004`，结构非法在蓝图校验期报 `SPEC011`。
+- 两条分配路线都满足精确配额：`hash` 按行号稳定哈希选键（容量冲突时确定性地顺移探测），`capacity` 按父表行序先用满前一个键的容量。同一路线在同一蓝图与 seed 下结果确定；路线选择写入 manifest 的 `distributions` 段，独立验证按声明核查业务分布，而不是把某一次具体键分配当作唯一合法答案。
+
 ## 3. 引用与唯一性
 
 - `references` 只能出现在 `foreign_key` 列。
@@ -114,7 +141,8 @@ YAML 裸写 `boundary: [null]` 时，PyYAML 会将 `null` 解析为 Python `None
 - 采用稳定分层拓扑：每轮收集所有依赖已满足的表，按表名排序后整层输出。
 - 自引用记录为独立标记，不构成环。
 - 非自引用环报 `SPEC005`。
-- 可读计划包含表顺序、依赖边和自引用。
+- `distribute` 声明在规划期做父属性依赖检查（属性必须存在于父表，否则 `SPEC011`），并作为独立边写入计划与可读输出。
+- 可读计划包含表顺序、依赖边、自引用和分布边。
 
 ## 5. 确定性
 
@@ -145,11 +173,12 @@ sha256("synthlab|<dataset_seed>|<dataset>|<table>|<column>|<row>|<attempt>")
 6. 字符串长度与文本词数在声明范围内；
 7. 唯一约束无重复非 NULL 组合；
 8. 表级 check 满足；
-9. 边界覆盖按标记统计。
+9. 边界覆盖按标记统计；
+10. `distribute` 声明的每类子行数与外键归属（从数据独立重算）。
 
 字符串/文本的空字符串视为显式 `empty` 边界，可豁免最小长度/词数检查；它不同于 NULL。
 
-约束问题使用 `CST001`–`CST009` 定位表与列。verifier 将其映射为 `VER*`。
+约束问题使用 `CST001`–`CST010` 定位表与列。verifier 将其映射为 `VER*`（`CST010` 映射为 `VER013`）。
 
 ## 7. 边界覆盖
 
@@ -202,6 +231,7 @@ manifest 至少包含：
 - 蓝图文件路径与 sha256；
 - 时间戳 `created_at`；
 - 表清单、行数、列统计、表数据 sha256；
+- `distributions`：每个 `distribute` 声明的父属性、路线、未列值策略、声明与解析后的配额（无声明时为空列表）；
 - 边界覆盖；
 - 输出文件相对路径、格式、字节数、sha256；
 - `content_fingerprint`。
@@ -234,6 +264,7 @@ verifier 不读取生成过程内存状态，只读取：
 - 蓝图副本 sha 与校验；
 - 每表行数与数据 sha；
 - 主键、外键、非空、枚举、范围、长度、唯一、表检查；
+- `distribute` 分布（manifest 声明与蓝图一致性、按数据重算的每类行数）；
 - 边界覆盖；
 - 内容指纹重算。
 

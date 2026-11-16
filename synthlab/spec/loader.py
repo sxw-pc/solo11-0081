@@ -10,7 +10,7 @@ from typing import Any
 import yaml
 
 from ..errors import SynthlabError
-from .model import CheckSpec, ColumnSpec, DatasetSpec, ReferenceSpec, TableSpec
+from .model import CheckSpec, ColumnSpec, DatasetSpec, DistributionSpec, ReferenceSpec, TableSpec
 
 
 @dataclass(slots=True)
@@ -101,6 +101,33 @@ def parse_check(value: Any) -> CheckSpec:
     raise ValueError("check must contain one of >=, <=, !=, ==, >, <")
 
 
+def _parse_distribution(raw: Any) -> DistributionSpec | None:
+    """Convert a raw ``distribute:`` mapping into the domain object.
+
+    Structural problems are reported by the validator; this parser is lenient
+    and only runs after validation succeeded.
+    """
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        return None
+    attribute = str(raw.get("by", ""))
+    quotas = raw.get("quotas")
+    proportions = raw.get("proportions")
+    if isinstance(quotas, dict):
+        entries = tuple(quotas.items())
+        mode = "quotas"
+    elif isinstance(proportions, dict):
+        entries = tuple(proportions.items())
+        mode = "proportions"
+    else:
+        entries = ()
+        mode = "quotas"
+    unlisted = str(raw.get("unlisted", "forbid"))
+    route = str(raw.get("route", "hash"))
+    return DistributionSpec(attribute, entries, mode, unlisted, route)
+
+
 def build_dataset(blueprint: Blueprint) -> DatasetSpec:
     raw = blueprint.data
     tables: list[TableSpec] = []
@@ -112,7 +139,8 @@ def build_dataset(blueprint: Blueprint) -> DatasetSpec:
             if isinstance(ref_value, str) and "." in ref_value:
                 parent, parent_column = ref_value.rsplit(".", 1)
                 reference = ReferenceSpec(parent, parent_column)
-            known = {"name", "type", "nullable", "null_rate", "unique", "references", "boundary", "description"}
+            known = {"name", "type", "nullable", "null_rate", "unique", "references", "boundary",
+                     "description", "distribute"}
             params = {key: value for key, value in raw_column.items() if key not in known}
             columns.append(
                 ColumnSpec(
@@ -124,6 +152,7 @@ def build_dataset(blueprint: Blueprint) -> DatasetSpec:
                     params=params,
                     references=reference,
                     boundary=tuple("null" if item is None else str(item) for item in _as_list(raw_column.get("boundary"))),
+                    distribute=_parse_distribution(raw_column.get("distribute")),
                 )
             )
         constraints = tuple(tuple(str(name) for name in group) for group in _as_list(raw_table.get("unique_constraints")))

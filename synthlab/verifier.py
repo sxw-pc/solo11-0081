@@ -9,6 +9,7 @@ from typing import Any
 
 from .constraints import check_dataset
 from .errors import SynthlabError
+from .generators.common import as_text
 from .manifest import compute_fingerprint, read_manifest, table_data_sha256, table_digest, utc_now_text
 from .readers import OutputReadError, read_output_tables, safe_output_path
 from .report import write_verification_reports
@@ -26,6 +27,7 @@ CONSTRAINT_CODES = {
     "CST007": "VER007",
     "CST008": "VER006",
     "CST009": "VER009",
+    "CST010": "VER013",
 }
 
 
@@ -262,6 +264,60 @@ def _add_constraint_checks(result: VerificationResult, dataset: DatasetSpec,
                        message, "VER009" if failed else None, table=table, column=column)
 
 
+def _expected_distributions(dataset: DatasetSpec) -> list[dict[str, Any]]:
+    """Declaration-level distribution entries derived from the blueprint."""
+    expected: list[dict[str, Any]] = []
+    for table in dataset.tables:
+        for column in table.columns:
+            dist = column.distribute
+            if dist is None or column.references is None:
+                continue
+            expected.append({
+                "table": table.name,
+                "column": column.name,
+                "parent": column.references.table,
+                "parent_column": column.references.column,
+                "by": dist.attribute,
+                "mode": dist.mode,
+                "route": dist.route,
+                "unlisted": dist.unlisted,
+                "declared": {as_text(value): amount for value, amount in dist.entries},
+            })
+    return sorted(expected, key=lambda entry: (entry["table"], entry["column"]))
+
+
+_DECLARATION_KEYS = ("table", "column", "parent", "parent_column", "by", "mode", "route",
+                     "unlisted", "declared")
+
+
+def _verify_distributions(result: VerificationResult, dataset: DatasetSpec,
+                          manifest: dict[str, Any]) -> None:
+    """Cross-check the manifest's distribution section against the blueprint.
+
+    The manifest records which assignment route was selected and which
+    business distribution must hold; the row-level recomputation itself
+    happens in the constraint checks (CST010 -> VER013).
+    """
+    expected = _expected_distributions(dataset)
+    recorded = manifest.get("distributions") or []
+    recorded_declarations = [
+        {key: entry.get(key) for key in _DECLARATION_KEYS}
+        for entry in recorded
+        if isinstance(entry, dict)
+    ]
+    recorded_sorted = sorted(
+        recorded_declarations, key=lambda entry: (str(entry.get("table")), str(entry.get("column")))
+    )
+    if not expected and not recorded:
+        return
+    if recorded_sorted != expected:
+        result.add("distributions", "fail",
+                   "manifest distributions do not match blueprint declarations", "VER010")
+        return
+    result.add("distributions", "pass",
+               f"{len(expected)} distribution declaration(s) recorded in manifest")
+
+
 def verify_dataset(out_dir: str | Path, blueprint_path: str | None = None) -> VerificationResult:
     target = Path(out_dir)
     result = VerificationResult(target, None)
@@ -285,6 +341,7 @@ def verify_dataset(out_dir: str | Path, blueprint_path: str | None = None) -> Ve
         return result
     tables, tables_complete = _verify_tables(result, dataset, manifest, target)
     _add_constraint_checks(result, dataset, tables)
+    _verify_distributions(result, dataset, manifest)
     if tables_complete and outputs_complete and len(tables) == len(dataset.tables):
         digests = [table_digest(data) for data in tables.values()]
         actual_fingerprint = compute_fingerprint(dataset, digests, actual_outputs)

@@ -11,8 +11,9 @@ from decimal import Decimal, InvalidOperation
 from typing import Any, Callable
 
 from .errors import Issue
+from .distribution import resolve_counts
 from .generators.boundary import boundary_hits
-from .generators.common import parse_date, parse_datetime
+from .generators.common import as_text, parse_date, parse_datetime
 from .spec.model import BoundaryResult, ColumnSpec, DatasetSpec, TableData, TableSpec
 
 
@@ -196,6 +197,61 @@ def _check_foreign_keys(dataset: DatasetSpec, tables: dict[str, TableData], tabl
                                 table=table.name, column=column.name))
 
 
+def _check_distributions(dataset: DatasetSpec, tables: dict[str, TableData], table: TableSpec,
+                         data: TableData, issues: list[Issue]) -> None:
+    """Recompute per-class child counts and foreign key ownership from data."""
+    missing = object()
+    for column in table.columns:
+        dist = column.distribute
+        if dist is None or column.references is None:
+            continue
+        parent = tables.get(column.references.table)
+        if parent is None or column.references.column not in parent.columns:
+            continue  # dangling parent is reported by _check_foreign_keys
+        if dist.attribute not in parent.columns:
+            issues.append(Issue(
+                "CST010",
+                f"distribute.by attribute {column.references.table}.{dist.attribute} is unavailable",
+                table=table.name, column=column.name,
+            ))
+            continue
+        key_class: dict[Any, Any] = {}
+        for key, attribute in zip(parent.values(column.references.column),
+                                  parent.values(dist.attribute)):
+            if key is not None:
+                key_class[key] = attribute
+        values = [value for value in data.values(column.name) if value is not None]
+        counts, _remainder = resolve_counts(dist, len(values))
+        declared = {as_text(value) for value, _ in counts}
+        actual: dict[str, int] = {}
+        unlisted = 0
+        for value in values:
+            cls = key_class.get(value, missing)
+            if cls is missing:
+                continue  # dangling key is reported by _check_foreign_keys
+            label = as_text(cls)
+            if label in declared:
+                actual[label] = actual.get(label, 0) + 1
+            else:
+                unlisted += 1
+        for value, expected in counts:
+            label = as_text(value)
+            found = actual.get(label, 0)
+            if found != expected:
+                issues.append(Issue(
+                    "CST010",
+                    f"distribution quota for parent attribute value {label!r}: "
+                    f"expected {expected} row(s), found {found}",
+                    table=table.name, column=column.name,
+                ))
+        if dist.unlisted == "forbid" and unlisted:
+            issues.append(Issue(
+                "CST010",
+                f"{unlisted} row(s) reference unlisted parent attribute values",
+                table=table.name, column=column.name,
+            ))
+
+
 def _compare(value: Any, operator: str, literal: Any) -> bool:
     left, right = value, literal
     if isinstance(literal, (int, float)) and not isinstance(literal, bool):
@@ -244,6 +300,7 @@ def check_dataset(
         _check_ranges(table, data, issues)
         _check_unique(table, data, issues)
         _check_foreign_keys(dataset, tables, table, data, issues)
+        _check_distributions(dataset, tables, table, data, issues)
         _check_table_checks(table, data, issues)
     boundary = build_boundary_report(dataset, tables)
     require = dataset.require_boundary_coverage if enforce_boundary is None else enforce_boundary

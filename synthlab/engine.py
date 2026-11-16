@@ -6,6 +6,7 @@ import random
 from typing import Any
 
 from .constraints import build_boundary_report, effective_nullable
+from .distribution import plan_distributions
 from .errors import GenerationError
 from .generators.boundary import MISSING, boundary_candidate, supports_marker
 from .generators.common import make_rng
@@ -191,17 +192,22 @@ def generate_dataset(dataset: DatasetSpec, plan: ExecutionPlan | None = None) ->
     execution = plan or plan_dataset(dataset)
     tables: dict[str, TableData] = {}
     column_pools: dict[str, dict[str, list[Any]]] = {}
+    distributions: dict[str, dict[str, Any]] = {}
     for table_name in execution.order:
         table = dataset.table(table_name)
         if table is None:
             raise GenerationError("GEN002", f"planned table {table_name!r} is missing")
         forced = _plan_boundaries(dataset, table, column_pools)
+        dist_forced, dist_info = plan_distributions(dataset, table, forced, column_pools)
+        forced.update(dist_forced)
         rows = _generate_rows(dataset, table, forced, column_pools)
         tables[table_name] = TableData(table_name, table.column_names, rows, table)
+        for column_name, info in dist_info.items():
+            distributions[f"{table_name}.{column_name}"] = info
     boundary = build_boundary_report(dataset, tables)
     stats = {
         table_name: _column_stats(dataset.table(table_name), tables[table_name], boundary)
         for table_name in execution.order
         if dataset.table(table_name) is not None
     }
-    return DatasetData(dataset, tables, execution.order, boundary, stats)
+    return DatasetData(dataset, tables, execution.order, boundary, stats, distributions)

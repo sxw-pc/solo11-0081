@@ -12,6 +12,79 @@ from .rules import BOUNDARY_MARKERS, CHECK_OPERATORS, is_int, is_number, validat
 
 IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
+DISCRETE_TYPES = {"enum", "string", "bool", "int", "sequence", "foreign_key"}
+DISTRIBUTE_ROUTES = {"hash", "capacity"}
+DISTRIBUTE_UNLISTED = {"forbid", "allow"}
+
+
+def _validate_distribute(raw: Any, table: str, column: str, nullable: bool, null_rate: Any,
+                         boundary: list[Any], refs: Any, bag: IssueBag) -> dict[str, Any] | None:
+    """Structural checks for a ``distribute:`` declaration on one column."""
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        bag.add("SPEC011", "distribute must be a mapping", table=table, column=column)
+        return None
+    attribute = raw.get("by")
+    if not isinstance(attribute, str) or not attribute:
+        bag.add("SPEC011", "distribute.by must name a parent attribute column", table=table, column=column)
+        attribute = ""
+    elif not IDENTIFIER.fullmatch(attribute):
+        bag.add("SPEC011", f"invalid distribute.by identifier {attribute!r}", table=table, column=column)
+    quotas = raw.get("quotas")
+    proportions = raw.get("proportions")
+    if quotas is not None and proportions is not None:
+        bag.add("SPEC011", "distribute accepts either quotas or proportions, not both",
+                table=table, column=column)
+    if quotas is None and proportions is None:
+        bag.add("SPEC011", "distribute requires quotas or proportions", table=table, column=column)
+    for label, entries, kind in (("quotas", quotas, "count"), ("proportions", proportions, "share")):
+        if entries is None:
+            continue
+        if not isinstance(entries, dict) or not entries:
+            bag.add("SPEC011", f"distribute.{label} must be a non-empty mapping", table=table, column=column)
+            continue
+        for value, amount in entries.items():
+            if value is None or isinstance(value, (list, dict)):
+                bag.add("SPEC011", f"distribute.{label} keys must be scalar attribute values",
+                        table=table, column=column)
+                break
+            if kind == "count" and (not is_int(amount) or amount < 0):
+                bag.add("SPEC011", f"distribute.quotas[{value!r}] must be a non-negative integer",
+                        table=table, column=column)
+            if kind == "share" and (not is_number(amount) or amount <= 0):
+                bag.add("SPEC011", f"distribute.proportions[{value!r}] must be a positive number",
+                        table=table, column=column)
+    if isinstance(proportions, dict) and proportions and all(
+        is_number(amount) for amount in proportions.values()
+    ):
+        total = sum(float(amount) for amount in proportions.values())
+        if total > 1.0 + 1e-9:
+            bag.add("SPEC011", "distribute.proportions must not sum above 1", table=table, column=column)
+    unlisted = raw.get("unlisted", "forbid")
+    if unlisted not in DISTRIBUTE_UNLISTED:
+        bag.add("SPEC011", f"distribute.unlisted must be one of {sorted(DISTRIBUTE_UNLISTED)}",
+                table=table, column=column)
+        unlisted = "forbid"
+    route = raw.get("route", "hash")
+    if route not in DISTRIBUTE_ROUTES:
+        bag.add("SPEC011", f"distribute.route must be one of {sorted(DISTRIBUTE_ROUTES)}",
+                table=table, column=column)
+        route = "hash"
+    if is_number(null_rate) and null_rate > 0:
+        bag.add("SPEC011", "distribute requires null_rate 0; use boundary [null] for forced NULLs",
+                table=table, column=column)
+    return {
+        "by": attribute,
+        "quotas": quotas if isinstance(quotas, dict) else None,
+        "proportions": proportions if isinstance(proportions, dict) else None,
+        "unlisted": unlisted,
+        "route": route,
+        "nullable": nullable,
+        "boundary": list(boundary) if isinstance(boundary, list) else [],
+        "references": refs,
+    }
+
 
 def _validate_dataset_header(raw: dict[str, Any], bag: IssueBag) -> None:
     if not isinstance(raw.get("dataset"), str) or not raw.get("dataset"):
@@ -63,7 +136,8 @@ def _validate_column(raw: dict[str, Any], table: str, primary_key: str, bag: Iss
             bag.add("SPEC009", "null boundary requires a nullable column", table=table, column=name)
         elif normalized_marker == "empty" and column_type not in ("string", "text"):
             bag.add("SPEC009", "empty boundary is only valid for string or text", table=table, column=name)
-    known = {"name", "type", "nullable", "null_rate", "unique", "references", "boundary", "description"}
+    known = {"name", "type", "nullable", "null_rate", "unique", "references", "boundary", "description",
+             "distribute"}
     params = {key: value for key, value in raw.items() if key not in known}
     if column_type in SUPPORTED_TYPES:
         validate_params(column_type, params, table, name, bag)
@@ -74,11 +148,17 @@ def _validate_column(raw: dict[str, Any], table: str, primary_key: str, bag: Iss
         bag.add("SPEC004", "references is only supported on foreign_key columns", table=table, column=name)
     if refs is not None and (not isinstance(refs, str) or refs.count(".") != 1):
         bag.add("SPEC004", "references must use 'table.column'", table=table, column=name)
+    distribute = _validate_distribute(raw.get("distribute"), table, name, nullable, null_rate,
+                                      boundary, refs, bag)
+    if distribute is not None and column_type != "foreign_key":
+        bag.add("SPEC011", "distribute is only supported on foreign_key columns", table=table, column=name)
     return {
         "name": name,
+        "type": column_type,
         "nullable": nullable,
         "unique": bool(raw.get("unique", False)),
         "references": refs,
+        "distribute": distribute,
     }
 
 
@@ -154,6 +234,7 @@ def _validate_table(raw: Any, max_rows: int, bag: IssueBag) -> dict[str, Any] | 
             bag.add("SPEC009", f"unsupported check operator {check.operator!r}", table=name, column=check.column)
     return {
         "name": name,
+        "rows": rows if is_int(rows) else 0,
         "columns": columns,
         "primary_key": primary_key,
         "unique_constraints": raw_constraints or [],
@@ -196,6 +277,62 @@ def _validate_references(tables: dict[str, dict[str, Any]], bag: IssueBag) -> No
                             table=table["name"], column=column["name"])
                 if parent_column != parent["primary_key"]:
                     bag.add("SPEC004", "self-reference must target the table primary key",
+                            table=table["name"], column=column["name"])
+
+
+def _validate_distribution_targets(tables: dict[str, dict[str, Any]], bag: IssueBag) -> None:
+    """Cross-table checks for distribute declarations (attribute, arithmetic)."""
+    for table in tables.values():
+        for column in table["columns"]:
+            dist = column.get("distribute")
+            if not dist:
+                continue
+            refs = dist["references"]
+            if not isinstance(refs, str) or refs.count(".") != 1:
+                continue
+            parent_name, _ = refs.split(".", 1)
+            if parent_name == table["name"]:
+                bag.add("SPEC011", "distribute is not supported on self-referencing foreign keys",
+                        table=table["name"], column=column["name"])
+                continue
+            parent = tables.get(parent_name)
+            if parent is None:
+                continue  # SPEC004 already reported by _validate_references
+            attribute = dist["by"]
+            parent_columns = {item["name"]: item for item in parent["columns"]}
+            if attribute and attribute not in parent_columns:
+                bag.add("SPEC011",
+                        f"distribute.by attribute {parent_name}.{attribute} does not exist",
+                        table=table["name"], column=column["name"])
+            elif attribute and parent_columns[attribute].get("type") not in DISCRETE_TYPES:
+                bag.add("SPEC011",
+                        f"distribute.by attribute {parent_name}.{attribute} must be a discrete "
+                        f"column ({sorted(DISCRETE_TYPES)})",
+                        table=table["name"], column=column["name"])
+            rows = table["rows"]
+            markers = {"null" if marker is None else marker for marker in dist["boundary"]}
+            forced_nulls = 1 if rows > 0 and "null" in markers and dist["nullable"] else 0
+            available = rows - forced_nulls
+            quotas = dist["quotas"]
+            if quotas and all(is_int(amount) and amount >= 0 for amount in quotas.values()):
+                total = sum(quotas.values())
+                if dist["unlisted"] == "forbid" and total != available:
+                    bag.add("SPEC011",
+                            f"distribute.quotas sum {total} must equal {available} "
+                            f"assignable row(s) when unlisted is forbid",
+                            table=table["name"], column=column["name"])
+                if dist["unlisted"] == "allow" and total > available:
+                    bag.add("SPEC011",
+                            f"distribute.quotas sum {total} exceeds {available} assignable row(s)",
+                            table=table["name"], column=column["name"])
+            proportions = dist["proportions"]
+            if proportions and dist["unlisted"] == "forbid" and all(
+                is_number(amount) for amount in proportions.values()
+            ):
+                total = sum(float(amount) for amount in proportions.values())
+                if abs(total - 1.0) > 1e-9:
+                    bag.add("SPEC011",
+                            "distribute.proportions must sum to 1 when unlisted is forbid",
                             table=table["name"], column=column["name"])
 
 
@@ -247,6 +384,7 @@ def collect_issues(blueprint: Blueprint) -> list[Issue]:
             bag.add("SPEC003", f"duplicate table {table['name']!r}", table=table["name"])
         tables[table["name"]] = table
     _validate_references(tables, bag)
+    _validate_distribution_targets(tables, bag)
     cycle = _detect_cycle(tables)
     if cycle:
         bag.add("SPEC005", f"cyclic table dependency: {' -> '.join(cycle)}")

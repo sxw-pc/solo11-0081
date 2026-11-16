@@ -25,16 +25,36 @@ class DependencyEdge:
 
 
 @dataclass(frozen=True, slots=True)
+class DistributionEdge:
+    """A child foreign key whose distribution is constrained by a parent attribute."""
+
+    child: str
+    column: str
+    parent: str
+    attribute: str
+
+    def as_dict(self) -> dict[str, str]:
+        return {
+            "child": self.child,
+            "column": self.column,
+            "parent": self.parent,
+            "attribute": self.attribute,
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class ExecutionPlan:
     order: tuple[str, ...]
     edges: tuple[DependencyEdge, ...]
     self_references: tuple[tuple[str, str], ...]
+    distributions: tuple[DistributionEdge, ...] = ()
 
     def as_dict(self) -> dict[str, object]:
         return {
             "order": list(self.order),
             "edges": [edge.as_dict() for edge in self.edges],
             "self_references": [{"table": table, "column": column} for table, column in self.references],
+            "distributions": [edge.as_dict() for edge in self.distributions],
         }
 
     @property
@@ -53,6 +73,12 @@ class ExecutionPlan:
         if self.self_references:
             lines.append("Self references (earlier rows only):")
             lines.extend(f"  {table}.{column} -> {table}" for table, column in self.self_references)
+        if self.distributions:
+            lines.append("Distributions (parent attribute drives child foreign key):")
+            lines.extend(
+                f"  {edge.child}.{edge.column} by {edge.parent}.{edge.attribute}"
+                for edge in self.distributions
+            )
         return "\n".join(lines)
 
 
@@ -62,6 +88,7 @@ def plan_dataset(dataset: DatasetSpec) -> ExecutionPlan:
     dependencies: dict[str, set[str]] = {name: set() for name in names}
     edges: list[DependencyEdge] = []
     self_refs: list[tuple[str, str]] = []
+    distributions: list[DistributionEdge] = []
     for table in dataset.tables:
         for column in table.columns:
             if column.references is None:
@@ -80,6 +107,24 @@ def plan_dataset(dataset: DatasetSpec) -> ExecutionPlan:
                 self_refs.append((table.name, column.name))
             else:
                 dependencies[table.name].add(parent)
+            if column.distribute is not None:
+                if parent == table.name:
+                    raise SynthlabError(
+                        "SPEC011",
+                        "distribute is not supported on self-referencing foreign keys",
+                        table=table.name,
+                        column=column.name,
+                    )
+                parent_spec = dataset.table(parent)
+                attribute = column.distribute.attribute
+                if parent_spec is None or parent_spec.column(attribute) is None:
+                    raise SynthlabError(
+                        "SPEC011",
+                        f"distribute.by attribute {parent}.{attribute} does not exist",
+                        table=table.name,
+                        column=column.name,
+                    )
+                distributions.append(DistributionEdge(table.name, column.name, parent, attribute))
 
     order: list[str] = []
     emitted: set[str] = set()
@@ -100,4 +145,5 @@ def plan_dataset(dataset: DatasetSpec) -> ExecutionPlan:
         order=tuple(order),
         edges=tuple(sorted(edges, key=lambda edge: (edge.child, edge.column, edge.parent, edge.parent_column))),
         self_references=tuple(sorted(self_refs)),
+        distributions=tuple(sorted(distributions, key=lambda edge: (edge.child, edge.column))),
     )

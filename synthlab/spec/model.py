@@ -44,6 +44,25 @@ class CheckSpec:
         return f"{self.column} {self.operator} {self.value!r}"
 
 
+@dataclass(frozen=True, slots=True)
+class DistributionSpec:
+    """Blueprint declaration constraining a foreign key by a parent attribute.
+
+    ``entries`` holds the declared per-class quotas (exact counts) or
+    proportions in declaration order; ``mode`` says which of the two it is.
+    """
+
+    attribute: str
+    entries: tuple[tuple[Any, Any], ...]
+    mode: str  # "quotas" | "proportions"
+    unlisted: str = "forbid"  # "forbid" | "allow"
+    route: str = "hash"  # "hash" | "capacity"
+
+    @property
+    def declared_values(self) -> tuple[Any, ...]:
+        return tuple(value for value, _ in self.entries)
+
+
 @dataclass(slots=True)
 class ColumnSpec:
     name: str
@@ -54,6 +73,7 @@ class ColumnSpec:
     params: dict[str, Any] = field(default_factory=dict)
     references: ReferenceSpec | None = None
     boundary: tuple[str, ...] = ()
+    distribute: DistributionSpec | None = None
 
     def param(self, key: str, default: Any = None) -> Any:
         return self.params.get(key, default)
@@ -169,6 +189,7 @@ class DatasetData:
     table_order: tuple[str, ...]
     boundary: dict[str, dict[str, BoundaryResult]] = field(default_factory=dict)
     column_stats: dict[str, dict[str, dict[str, Any]]] = field(default_factory=dict)
+    distributions: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def table(self, name: str) -> TableData:
         return self.tables[name]

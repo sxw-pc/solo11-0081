@@ -116,6 +116,7 @@ def build_manifest(
         "created_at": created_at or utc_now_text(),
         "formats": sorted({item["format"] for item in output_records if item["format"] != "blueprint"}),
         "tables": tables,
+        "distributions": [data.distributions[key] for key in sorted(data.distributions)],
         "boundary_coverage": {
             table: {column: result.as_dict() for column, result in columns.items()}
             for table, columns in data.boundary.items()

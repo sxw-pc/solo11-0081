@@ -1,0 +1,53 @@
+dataset: dist_shop
+seed: 20251116
+version: "1.0.0"
+require_boundary_coverage: false
+max_rows: 100000
+tables:
+  - name: customers
+    rows: 6
+    primary_key: customer_id
+    columns:
+      - name: customer_id
+        type: sequence
+        nullable: false
+        start: 1
+        format: "CUST-{value:03d}"
+      - name: region
+        type: enum
+        nullable: false
+        values:
+          east: 50
+          west: 50
+      - name: segment
+        type: enum
+        nullable: false
+        values: [retail, wholesale]
+
+  - name: orders
+    rows: 7
+    primary_key: order_id
+    columns:
+      - name: order_id
+        type: sequence
+        nullable: false
+        start: 1
+        format: "ORD-{value:03d}"
+      - name: customer_id
+        type: foreign_key
+        nullable: false
+        references: customers.customer_id
+        distribute:
+          by: region
+          quotas:
+            east: 5
+            west: 2
+          unlisted: forbid
+          route: capacity
+      - name: amount
+        type: int
+        nullable: false
+        min: 1
+        max: 500
+    checks:
+      - "amount >= 1"

@@ -11,6 +11,7 @@ CLI (cli.py, __main__.py)
   │
   ├── planner.py
   ├── engine.py ── generators/{registry,primitives,common,boundary}.py
+  ├── distribution.py
   ├── constraints.py
   ├── exporters.py ── sqlite_export.py
   ├── manifest.py
@@ -43,8 +44,9 @@ YAML bytes
 
 ### 2.2 生成层
 
-- `planner.py` 构建依赖图，进行稳定分层拓扑排序，自引用独立标记。
+- `planner.py` 构建依赖图，进行稳定分层拓扑排序，自引用独立标记，`distribute` 父属性依赖检查。
 - `engine.py` 负责行循环、派生 RNG、空值率、唯一重试、边界注入和统计。
+- `distribution.py` 在子表生成前把 `distribute` 声明解析为确定性的行→父键计划：从父表生成值建立属性→键映射，核对唯一容量、强制 NULL 与边界强制值后给出可行/不可行结论（`GEN004`），并按 `hash` / `capacity` 路线分配。
 - `generators/registry.py` 按类型分发。
 - `generators/primitives.py` 实现 12 种生成器；每个生成器可独立构造和单测。
 - `generators/boundary.py` 提供纯函数边界候选与命中判断，生成和约束检查共用其语义，但不共享运行状态。
