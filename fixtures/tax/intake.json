@@ -1,0 +1,65 @@
+{
+  "orders": [
+    {
+      "order_id": "o-1",
+      "destination": "A",
+      "channel": "merchant",
+      "sold_at": "2025-05-01",
+      "status": "paid"
+    },
+    {
+      "order_id": "o-2",
+      "destination": "A",
+      "channel": "marketplace",
+      "sold_at": "2025-05-02",
+      "status": "paid"
+    },
+    {
+      "order_id": "o-3",
+      "destination": "B",
+      "channel": "merchant",
+      "sold_at": "2025-05-03",
+      "status": "paid"
+    }
+  ],
+  "items": [
+    {
+      "item_id": "i-1",
+      "order_id": "o-1",
+      "tax_category": "general",
+      "line_total": "40.00"
+    },
+    {
+      "item_id": "i-2",
+      "order_id": "o-2",
+      "tax_category": "general",
+      "line_total": "35.00"
+    },
+    {
+      "item_id": "i-3",
+      "order_id": "o-3",
+      "tax_category": "food",
+      "line_total": "20.00"
+    }
+  ],
+  "rates": {
+    "A": {
+      "general": "0.10",
+      "food": "0.00"
+    },
+    "B": {
+      "general": "0.08",
+      "food": "0.02"
+    }
+  },
+  "fictional_rules": {
+    "A": {
+      "nexus_rolling_gross_threshold": "60.00",
+      "marketplace_collects": true
+    },
+    "B": {
+      "nexus_rolling_gross_threshold": "30.00",
+      "marketplace_collects": false
+    }
+  }
+}
