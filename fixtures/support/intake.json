@@ -2,7 +2,7 @@
   "cases": [
     {
       "case_id": "s-1",
-      "order_id": "ORD-0001",
+      "order_id": "ORD-00001",
       "skill": "billing",
       "language": "zh",
       "arrives": 0,
@@ -17,7 +17,7 @@
     },
     {
       "case_id": "s-2",
-      "order_id": "ORD-0002",
+      "order_id": "ORD-00002",
       "skill": "shipping",
       "language": "zh",
       "arrives": 0,
@@ -32,7 +32,7 @@
     },
     {
       "case_id": "s-3",
-      "order_id": "ORD-0003",
+      "order_id": "ORD-00003",
       "skill": "billing",
       "language": "en",
       "arrives": 1,
