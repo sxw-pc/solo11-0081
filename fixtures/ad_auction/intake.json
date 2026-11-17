@@ -1,0 +1,53 @@
+{
+  "sku_id": "SKU-0001",
+  "slots": [
+    "hero",
+    "sidebar",
+    "footer"
+  ],
+  "bids": [
+    {
+      "bid_id": "b1",
+      "advertiser": "adv-1",
+      "slots": [
+        "hero",
+        "sidebar"
+      ],
+      "value": 20
+    },
+    {
+      "bid_id": "b2",
+      "advertiser": "adv-2",
+      "slots": [
+        "hero"
+      ],
+      "value": 15
+    },
+    {
+      "bid_id": "b3",
+      "advertiser": "adv-3",
+      "slots": [
+        "sidebar"
+      ],
+      "value": 4
+    },
+    {
+      "bid_id": "b4",
+      "advertiser": "adv-4",
+      "slots": [
+        "footer"
+      ],
+      "value": 5
+    }
+  ],
+  "contracts": {
+    "first_price": {
+      "payment_rule": "winning_bid"
+    },
+    "externality_price": {
+      "payment_rule": "vcg_externality"
+    }
+  },
+  "max_bids": 8,
+  "max_slots": 4
+}
