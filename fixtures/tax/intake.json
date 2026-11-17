@@ -55,11 +55,27 @@
   "fictional_rules": {
     "A": {
       "nexus_rolling_gross_threshold": "60.00",
-      "marketplace_collects": true
+      "marketplace_collects": true,
+      "authorized_nexus_bases": [
+        "all_channel_gross",
+        "merchant_only_gross"
+      ]
     },
     "B": {
       "nexus_rolling_gross_threshold": "30.00",
-      "marketplace_collects": false
+      "marketplace_collects": false,
+      "authorized_nexus_bases": [
+        "merchant_only_gross"
+      ]
     }
-  }
+  },
+  "refunds": [
+    {
+      "refund_id": "rf-1",
+      "order_id": "o-1",
+      "item_id": "i-1",
+      "amount": "5.00",
+      "refunded_at": "2025-05-10"
+    }
+  ]
 }
