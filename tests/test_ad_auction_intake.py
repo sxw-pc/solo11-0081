@@ -15,7 +15,7 @@ def test_auction_product_is_generated_catalog_sku():
 def test_atomic_preview_excludes_high_value_bundle():
     root=Path(__file__).parents[1]
     data=json.loads((root/"fixtures/ad_auction/intake.json").read_text())
-    assert atomic_preview(data)==["b2","b4","b3"]
+    assert atomic_preview(data)==["b6","b4","b3"]
     by_id={b["bid_id"]:b for b in data["bids"]}
     assert sum(by_id[i]["value"] for i in atomic_preview(data))==24
     assert by_id["b1"]["value"]+by_id["b4"]["value"]==25

@@ -29,7 +29,7 @@
       "slots": [
         "sidebar"
       ],
-      "value": 4
+      "value": 3
     },
     {
       "bid_id": "b4",
@@ -38,6 +38,14 @@
         "footer"
       ],
       "value": 5
+    },
+    {
+      "bid_id": "b6",
+      "advertiser": "adv-1",
+      "slots": [
+        "hero"
+      ],
+      "value": 16
     }
   ],
   "contracts": {
