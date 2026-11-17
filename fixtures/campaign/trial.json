@@ -1,0 +1,654 @@
+{
+  "design": {
+    "assignment_unit": "household",
+    "randomized_blocks": "alternating synthetic household blocks",
+    "monotone_exposure": true,
+    "exclusion_by_synthetic_rule": true,
+    "decision_threshold": "0.34",
+    "missing_outcome_ids": [
+      "CUST-00001"
+    ]
+  },
+  "events": [
+    {
+      "customer_id": "CUST-00001",
+      "household_id": "hh-001",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": null,
+      "outcome_observed": false
+    },
+    {
+      "customer_id": "CUST-00002",
+      "household_id": "hh-001",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00003",
+      "household_id": "hh-002",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00004",
+      "household_id": "hh-002",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00005",
+      "household_id": "hh-003",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00006",
+      "household_id": "hh-003",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00007",
+      "household_id": "hh-004",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00008",
+      "household_id": "hh-004",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00009",
+      "household_id": "hh-005",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00010",
+      "household_id": "hh-005",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00011",
+      "household_id": "hh-006",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00012",
+      "household_id": "hh-006",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00013",
+      "household_id": "hh-007",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00014",
+      "household_id": "hh-007",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00015",
+      "household_id": "hh-008",
+      "assigned": 1,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00016",
+      "household_id": "hh-008",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00017",
+      "household_id": "hh-009",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00018",
+      "household_id": "hh-009",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00019",
+      "household_id": "hh-010",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00020",
+      "household_id": "hh-010",
+      "assigned": 1,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00021",
+      "household_id": "hh-011",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00022",
+      "household_id": "hh-011",
+      "assigned": 0,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00023",
+      "household_id": "hh-012",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00024",
+      "household_id": "hh-012",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00025",
+      "household_id": "hh-013",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00026",
+      "household_id": "hh-013",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00027",
+      "household_id": "hh-014",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00028",
+      "household_id": "hh-014",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00029",
+      "household_id": "hh-015",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00030",
+      "household_id": "hh-015",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00031",
+      "household_id": "hh-016",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00032",
+      "household_id": "hh-016",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00033",
+      "household_id": "hh-017",
+      "assigned": 0,
+      "exposed": 1,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00034",
+      "household_id": "hh-017",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00035",
+      "household_id": "hh-018",
+      "assigned": 1,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00036",
+      "household_id": "hh-018",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00037",
+      "household_id": "hh-019",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00038",
+      "household_id": "hh-019",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00039",
+      "household_id": "hh-020",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00040",
+      "household_id": "hh-020",
+      "assigned": 1,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00041",
+      "household_id": "hh-021",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00042",
+      "household_id": "hh-021",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00043",
+      "household_id": "hh-022",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00044",
+      "household_id": "hh-022",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00045",
+      "household_id": "hh-023",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00046",
+      "household_id": "hh-023",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00047",
+      "household_id": "hh-024",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00048",
+      "household_id": "hh-024",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00049",
+      "household_id": "hh-025",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00050",
+      "household_id": "hh-025",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00051",
+      "household_id": "hh-026",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00052",
+      "household_id": "hh-026",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00053",
+      "household_id": "hh-027",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00054",
+      "household_id": "hh-027",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00055",
+      "household_id": "hh-028",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00056",
+      "household_id": "hh-028",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00057",
+      "household_id": "hh-029",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00058",
+      "household_id": "hh-029",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00059",
+      "household_id": "hh-030",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00060",
+      "household_id": "hh-030",
+      "assigned": 1,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00061",
+      "household_id": "hh-031",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00062",
+      "household_id": "hh-031",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00063",
+      "household_id": "hh-032",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00064",
+      "household_id": "hh-032",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00065",
+      "household_id": "hh-033",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00066",
+      "household_id": "hh-033",
+      "assigned": 0,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00067",
+      "household_id": "hh-034",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00068",
+      "household_id": "hh-034",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00069",
+      "household_id": "hh-035",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00070",
+      "household_id": "hh-035",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00071",
+      "household_id": "hh-036",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00072",
+      "household_id": "hh-036",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00073",
+      "household_id": "hh-037",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00074",
+      "household_id": "hh-037",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00075",
+      "household_id": "hh-038",
+      "assigned": 1,
+      "exposed": 0,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00076",
+      "household_id": "hh-038",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 0,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00077",
+      "household_id": "hh-039",
+      "assigned": 0,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00078",
+      "household_id": "hh-039",
+      "assigned": 0,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00079",
+      "household_id": "hh-040",
+      "assigned": 1,
+      "exposed": 1,
+      "converted": 1,
+      "outcome_observed": true
+    },
+    {
+      "customer_id": "CUST-00080",
+      "household_id": "hh-040",
+      "assigned": 1,
+      "exposed": 0,
+      "converted": 1,
+      "outcome_observed": true
+    }
+  ]
+}

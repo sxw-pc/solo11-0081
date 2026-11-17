@@ -1,0 +1,28 @@
+dataset: invalid_cycle
+seed: 9
+version: "1.0.0"
+tables:
+  - name: alpha
+    rows: 3
+    primary_key: alpha_id
+    columns:
+      - name: alpha_id
+        type: sequence
+        nullable: false
+        start: 1
+      - name: beta_id
+        type: foreign_key
+        nullable: false
+        references: beta.beta_id
+  - name: beta
+    rows: 3
+    primary_key: beta_id
+    columns:
+      - name: beta_id
+        type: sequence
+        nullable: false
+        start: 1
+      - name: alpha_id
+        type: foreign_key
+        nullable: false
+        references: alpha.alpha_id

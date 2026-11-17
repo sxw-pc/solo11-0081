@@ -1,0 +1,29 @@
+{
+  "assignment": {
+    "control": {
+      "converted_observed": 17,
+      "outcome_observed": 39,
+      "total": 40,
+      "exposed": 4
+    },
+    "offer": {
+      "converted_observed": 29,
+      "outcome_observed": 40,
+      "total": 40,
+      "exposed": 33
+    }
+  },
+  "missing_outcome_ids": [
+    "CUST-00001"
+  ],
+  "threshold": "0.34",
+  "itt_interval": [
+    "0.275",
+    "0.300"
+  ],
+  "first_stage": "0.725",
+  "complier_interval": [
+    "0.3793103448275862",
+    "0.41379310344827586"
+  ]
+}

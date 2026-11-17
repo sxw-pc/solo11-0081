@@ -1,0 +1,15 @@
+{
+  "blueprint_sha256": "092c5b25ebbeb2dfd8a04b7ac1f91165ece0d70fa939b7361f2f5e94bd08640f",
+  "content_fingerprint": "453cc399fd804aefc0bc66d97cdad2e89c77a4296b0a55d115f39852f1867401",
+  "dataset": "demo_shop",
+  "seed": 20251115,
+  "table_data_sha256": {
+    "categories": "dda8528c1780bc2143a96c5e5c4885ca6825318d346543a988e78ab0d2f07125",
+    "customers": "9444826f2f66b515021b596a962e52a2dd0d66cdcf03fbe78b21ab34cd47f5d7",
+    "order_items": "f7ba37a9d99ffe10d18f0647855a560f38e4369246baf20fff2d57f9d8ddbbd8",
+    "orders": "55a1f11c3fe2de6f51c5fc489ec5d84c75dc9820182a742152e377f3d107567d",
+    "products": "df98998aada3817e2cfeaf0b75224aec8f511a2b84f949165f9b80e7b245abc4",
+    "regions": "7d373c976625df61e1f48b1a2bf8f3b9500d6dae1ee60e145e85173deb21c1c7"
+  },
+  "version": "1.0.0"
+}
