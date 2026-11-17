@@ -144,5 +144,13 @@
       "duration_field": "resolve_minutes",
       "all_cases_required": true
     }
-  }
+  },
+  "roster_corrections": [
+    {
+      "correction_id": "corr-a3",
+      "agent_id": "a-3",
+      "new_shift_end": 2,
+      "after_signed_plan": true
+    }
+  ]
 }
