@@ -1,0 +1,67 @@
+{
+  "invoices": [
+    {
+      "invoice_id": "inv-A",
+      "customer_id": "CUST-00001",
+      "principal": 50,
+      "fee": 12,
+      "deposit": 10
+    },
+    {
+      "invoice_id": "inv-B",
+      "customer_id": "CUST-00002",
+      "principal": 50,
+      "fee": 11,
+      "deposit": 10
+    },
+    {
+      "invoice_id": "inv-C",
+      "customer_id": "CUST-00003",
+      "principal": 40,
+      "fee": 10,
+      "deposit": 20
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "shock-AB",
+      "defaults": [
+        "inv-A",
+        "inv-B"
+      ]
+    },
+    {
+      "scenario_id": "shock-C",
+      "defaults": [
+        "inv-C"
+      ]
+    },
+    {
+      "scenario_id": "shock-AC",
+      "defaults": [
+        "inv-A",
+        "inv-C"
+      ]
+    }
+  ],
+  "contracts": {
+    "cash_deposit": {
+      "worst_case_limit": 40,
+      "guarantee_pool": 0,
+      "eligible_customers": [
+        "CUST-00001",
+        "CUST-00002",
+        "CUST-00003"
+      ]
+    },
+    "shared_guarantee": {
+      "worst_case_limit": 40,
+      "guarantee_pool": 50,
+      "eligible_customers": [
+        "CUST-00001",
+        "CUST-00002",
+        "CUST-00003"
+      ]
+    }
+  }
+}
