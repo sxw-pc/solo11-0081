@@ -4,19 +4,29 @@
       "order_id": "o-1",
       "status": "paid",
       "ship_by": "2025-05-03",
-      "split_allowed": false
+      "split_allowed": false,
+      "allowed_contracts": [
+        "all_or_none",
+        "partial_release"
+      ]
     },
     {
       "order_id": "o-2",
       "status": "paid",
       "ship_by": "2025-05-02",
-      "split_allowed": false
+      "split_allowed": false,
+      "allowed_contracts": [
+        "all_or_none"
+      ]
     },
     {
       "order_id": "o-3",
       "status": "draft",
       "ship_by": "2025-05-04",
-      "split_allowed": true
+      "split_allowed": true,
+      "allowed_contracts": [
+        "partial_release"
+      ]
     }
   ],
   "items": [
