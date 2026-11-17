@@ -1,0 +1,311 @@
+dataset: demo_shop
+seed: 20251115
+version: "1.0.0"
+require_boundary_coverage: false
+max_rows: 100000
+tables:
+  - name: categories
+    rows: 14
+    primary_key: category_id
+    columns:
+      - name: category_id
+        type: sequence
+        nullable: false
+        start: 1
+        step: 1
+        format: "CAT-{value:03d}"
+      - name: name
+        type: string
+        nullable: false
+        unique: true
+        pattern: "Category-{seq:02d}"
+      - name: parent_id
+        type: foreign_key
+        nullable: true
+        null_rate: 0.2
+        references: categories.category_id
+        boundary: [null]
+      - name: created_on
+        type: date
+        nullable: false
+        start: "2022-01-01"
+        end: "2024-12-31"
+        boundary: [min, max]
+
+  - name: regions
+    rows: 8
+    primary_key: region_id
+    columns:
+      - name: region_id
+        type: sequence
+        nullable: false
+        start: 1
+        format: "REG-{value:02d}"
+      - name: region_name
+        type: string
+        nullable: false
+        unique: true
+        pattern: "Region-{seq:02d}"
+      - name: climate
+        type: enum
+        nullable: false
+        values:
+          wind: 30
+          sun: 40
+          rain: 20
+          snow: 10
+        boundary: [min, max]
+      - name: population
+        type: int
+        nullable: false
+        min: 10000
+        max: 2000000
+        step: 10
+        boundary: [min, max]
+      - name: is_remote
+        type: bool
+        nullable: false
+        true_weight: 0.2
+
+  - name: customers
+    rows: 80
+    primary_key: customer_id
+    columns:
+      - name: customer_id
+        type: sequence
+        nullable: false
+        start: 1
+        format: "CUST-{value:05d}"
+      - name: external_id
+        type: uuid
+        nullable: false
+        unique: true
+      - name: account_code
+        type: string
+        nullable: false
+        unique: true
+        pattern: "ACCT-{seq:05d}"
+      - name: full_name
+        type: text
+        nullable: false
+        min_words: 2
+        max_words: 3
+        words: [amber, birch, cobalt, delta, ember, fern, harbor, indigo, juniper, meadow, north, pine]
+      - name: email
+        type: string
+        nullable: false
+        unique: true
+        pattern: "user{seq:05d}@demo.invalid"
+      - name: region_id
+        type: foreign_key
+        nullable: false
+        references: regions.region_id
+      - name: status
+        type: enum
+        nullable: false
+        values:
+          - value: active
+            weight: 60
+          - value: inactive
+            weight: 25
+          - value: trial
+            weight: 15
+        boundary: [min, max]
+      - name: signup_date
+        type: date
+        nullable: false
+        start: "2023-01-01"
+        end: "2025-12-31"
+        step_days: 1
+        boundary: [min, max]
+      - name: created_at
+        type: datetime
+        nullable: false
+        start: "2023-01-01T00:00:00Z"
+        end: "2025-12-31T23:59:59Z"
+        step_seconds: 60
+      - name: is_active
+        type: bool
+        nullable: false
+        true_weight: 0.82
+        boundary: [min, max]
+      - name: credit_limit
+        type: decimal
+        nullable: false
+        min: 100
+        max: 50000
+        precision: 2
+      - name: loyalty_score
+        type: float
+        nullable: false
+        min: 0
+        max: 100
+        precision: 2
+        boundary: [min, max]
+      - name: bio
+        type: text
+        nullable: true
+        null_rate: 0.15
+        min_words: 2
+        max_words: 5
+        words: [amber, cedar, quiet, river, slate, timber, violet, willow, zephyr, north, opal, linen]
+
+  - name: products
+    rows: 45
+    primary_key: product_id
+    columns:
+      - name: product_id
+        type: sequence
+        nullable: false
+        start: 1
+        format: "SKU-{value:04d}"
+      - name: name
+        type: string
+        nullable: false
+        unique: true
+        pattern: "Product-{seq:03d}"
+      - name: category_id
+        type: foreign_key
+        nullable: false
+        references: categories.category_id
+      - name: unit_price
+        type: decimal
+        nullable: false
+        min: 0.99
+        max: 1999.99
+        precision: 2
+      - name: stock_quantity
+        type: int
+        nullable: false
+        min: 0
+        max: 500
+        boundary: [min, max]
+      - name: is_active
+        type: bool
+        nullable: false
+        true_weight: 0.9
+        boundary: [min, max]
+      - name: weight_kg
+        type: float
+        nullable: false
+        min: 0.1
+        max: 25.0
+        precision: 3
+      - name: listed_on
+        type: date
+        nullable: false
+        start: "2023-01-01"
+        end: "2025-11-30"
+      - name: description
+        type: text
+        nullable: true
+        null_rate: 0.1
+        min_words: 3
+        max_words: 7
+        words: [compact, durable, modular, quiet, recycled, textured, lightweight, practical, cedar, slate, amber, harbor]
+
+  - name: orders
+    rows: 160
+    primary_key: order_id
+    columns:
+      - name: order_id
+        type: sequence
+        nullable: false
+        start: 1
+        format: "ORD-{value:05d}"
+      - name: customer_id
+        type: foreign_key
+        nullable: false
+        references: customers.customer_id
+      - name: placed_at
+        type: datetime
+        nullable: false
+        start: "2024-01-01T00:00:00Z"
+        end: "2025-11-30T23:59:59Z"
+        step_seconds: 30
+      - name: order_date
+        type: date
+        nullable: false
+        start: "2024-01-01"
+        end: "2025-11-30"
+      - name: status
+        type: enum
+        nullable: false
+        values:
+          pending: 20
+          paid: 50
+          shipped: 25
+          cancelled: 5
+      - name: total_amount
+        type: decimal
+        nullable: false
+        min: 1
+        max: 20000
+        precision: 2
+      - name: item_count
+        type: int
+        nullable: false
+        min: 1
+        max: 12
+      - name: note
+        type: text
+        nullable: true
+        null_rate: 0.25
+        min_words: 2
+        max_words: 5
+        words: [leave, porch, gift, wrap, evening, morning, fragile, nearby, please, call]
+        boundary: [null, empty]
+      - name: is_gift
+        type: bool
+        nullable: false
+        true_weight: 0.15
+    checks:
+      - "total_amount >= 0"
+      - "item_count >= 1"
+
+  - name: order_items
+    rows: 360
+    primary_key: item_id
+    columns:
+      - name: item_id
+        type: sequence
+        nullable: false
+        start: 1
+        format: "ITEM-{value:05d}"
+      - name: order_id
+        type: foreign_key
+        nullable: false
+        references: orders.order_id
+      - name: product_id
+        type: foreign_key
+        nullable: false
+        references: products.product_id
+      - name: quantity
+        type: int
+        nullable: false
+        min: 1
+        max: 20
+      - name: unit_price
+        type: decimal
+        nullable: false
+        min: 0.99
+        max: 1999.99
+        precision: 2
+      - name: line_total
+        type: decimal
+        nullable: false
+        min: 0.99
+        max: 39999.98
+        precision: 2
+      - name: discount_pct
+        type: float
+        nullable: false
+        min: 0
+        max: 0.5
+        precision: 2
+        boundary: [min, max]
+    unique_constraints:
+      - [order_id, product_id]
+    checks:
+      - "quantity >= 1"
+      - "line_total >= 0"

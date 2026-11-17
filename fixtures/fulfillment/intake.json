@@ -1,0 +1,56 @@
+{
+  "orders": [
+    {
+      "order_id": "o-1",
+      "status": "paid",
+      "ship_by": "2025-05-03"
+    },
+    {
+      "order_id": "o-2",
+      "status": "paid",
+      "ship_by": "2025-05-02"
+    },
+    {
+      "order_id": "o-3",
+      "status": "draft",
+      "ship_by": "2025-05-04"
+    }
+  ],
+  "items": [
+    {
+      "item_id": "i-1",
+      "order_id": "o-1",
+      "product_id": "sku-a",
+      "quantity": 2
+    },
+    {
+      "item_id": "i-2",
+      "order_id": "o-2",
+      "product_id": "sku-a",
+      "quantity": 1
+    },
+    {
+      "item_id": "i-3",
+      "order_id": "o-3",
+      "product_id": "sku-b",
+      "quantity": 1
+    }
+  ],
+  "stock": [
+    {
+      "warehouse": "east",
+      "product_id": "sku-a",
+      "units": 1
+    },
+    {
+      "warehouse": "west",
+      "product_id": "sku-a",
+      "units": 1
+    },
+    {
+      "warehouse": "east",
+      "product_id": "sku-b",
+      "units": 1
+    }
+  ]
+}
