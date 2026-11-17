@@ -1,0 +1,4 @@
+# Runtime: exactly one third-party dependency (YAML parsing).
+PyYAML>=6.0
+# Test runner (not imported by synthlab at runtime).
+pytest>=7.0

@@ -1,0 +1,80 @@
+{
+  "cases": [
+    {
+      "case_id": "s-1",
+      "order_id": "ORD-0001",
+      "skill": "billing",
+      "language": "zh",
+      "arrives": 0,
+      "response_minutes": 1,
+      "resolve_minutes": 3,
+      "deadline": 3,
+      "priority": 3,
+      "allowed_contracts": [
+        "first_response",
+        "full_resolution"
+      ]
+    },
+    {
+      "case_id": "s-2",
+      "order_id": "ORD-0002",
+      "skill": "shipping",
+      "language": "zh",
+      "arrives": 0,
+      "response_minutes": 1,
+      "resolve_minutes": 2,
+      "deadline": 2,
+      "priority": 2,
+      "allowed_contracts": [
+        "first_response",
+        "full_resolution"
+      ]
+    },
+    {
+      "case_id": "s-3",
+      "order_id": "ORD-0003",
+      "skill": "billing",
+      "language": "en",
+      "arrives": 1,
+      "response_minutes": 1,
+      "resolve_minutes": 2,
+      "deadline": 3,
+      "priority": 1,
+      "allowed_contracts": [
+        "first_response",
+        "full_resolution"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "agent_id": "a-1",
+      "skills": [
+        "billing",
+        "shipping"
+      ],
+      "languages": [
+        "zh",
+        "en"
+      ],
+      "shift_start": 0,
+      "shift_end": 3
+    },
+    {
+      "agent_id": "a-2",
+      "skills": [
+        "shipping"
+      ],
+      "languages": [
+        "zh"
+      ],
+      "shift_start": 0,
+      "shift_end": 2
+    }
+  ],
+  "agent_concurrency": 1,
+  "authorized_contracts": [
+    "first_response",
+    "full_resolution"
+  ]
+}

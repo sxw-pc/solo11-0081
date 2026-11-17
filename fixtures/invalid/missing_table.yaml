@@ -1,0 +1,16 @@
+dataset: invalid_missing_table
+seed: 7
+version: "1.0.0"
+tables:
+  - name: children
+    rows: 3
+    primary_key: child_id
+    columns:
+      - name: child_id
+        type: sequence
+        nullable: false
+        start: 1
+      - name: parent_id
+        type: foreign_key
+        nullable: false
+        references: absent_parent.parent_id
