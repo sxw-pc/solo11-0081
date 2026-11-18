@@ -5,6 +5,26 @@
 `python -m synthlab.commerce_audit --spec fixtures/demo/dataset.yaml` 会报告当前
 独立列生成的实际不一致；此审计不修改数据或生成器。
 
+`synthlab/campaign_audit.py` 对 `fixtures/campaign/trial.json` 的 80 个客户 / 40
+个家庭做**有界样本合同裁决**。家庭是随机化单位；审计只读试验实际列
+（`assigned` / `exposed` / `converted` / `outcome_observed`）与引擎生成的客户
+身份，绝不调用 `synthlab/campaign_design.py` 的结构生成规则填补未观测转化
+（该模块只在测试中提供单调触达与排他约束的独立证据）。两份事先授权合同不可
+互换：
+
+- `offer_rollout`：向所有家庭发邀请，按家庭随机指派的意向治疗差（ITT）裁决；
+- `reached_only`：只为实际触达的增量客户付费，仅在单调触达、排他约束经设计
+  契约核证且触达第一阶段为正时，用指派作工具变量计算 complier effect
+  （ITT ÷ 触达率差）裁决。
+
+缺失转化按 0 和 1 完整传播为区间：区间整体严格高于门槛 0.34 才批准，整体不
+超过门槛则拒绝，跨越门槛为证据不足。直接比较 exposed/unexposed 的朴素关联只
+作反例对照并明确标注为观察相关，不具因果含义。运行
+`python -m synthlab.campaign_audit --trial fixtures/campaign/trial.json`
+（加 `--json` 输出机器可读结果）。当前 fixture：ITT 区间 0.275–0.300、首阶段
+0.725，故 `offer_rollout` 拒绝、`reached_only` 的 complier 区间
+0.379–0.414 批准。本裁决只针对该合成试验，不声称真实人群效果或对外统计保证。
+
 一个**纯本地、完全离线、声明式、确定性的多表合成数据生成与校验工作台**。
 
 造数台读取一份 YAML 数据集蓝图，先做结构与引用完整性校验，再按依赖拓扑逐表生成数据，执行约束和边界覆盖检查，导出 SQLite / CSV / JSONL，并生成 manifest、数据说明书和独立校验报告。它适合开发、测试、演示和回归场景，也可以作为 Coding Agent 评测中的离线素材源。

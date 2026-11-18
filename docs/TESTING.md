@@ -18,7 +18,9 @@ python -m pytest
 python -m pytest -q
 ```
 
-当前基线：**85 passed**，本机约 6 秒完成。测试不需要网络。
+当前基线：**122 passed, 1 failed**（`test_golden` 的内容指纹含 SQLite 导出
+字节，跨 SQLite 运行库版本会漂移，见 README「确定性」；同版本同输入下表数据
+摘要与蓝图哈希仍一致），本机约 3 秒完成。测试不需要网络。
 
 ## 2. 测试分层
 
@@ -34,6 +36,10 @@ python -m pytest -q
 | `test_manifest.py` | manifest 字段、时间戳独立性、摘要变化、往返读写 |
 | `test_verifier.py` | 独立复读、文件缺失、篡改文件、篡改数据、蓝图哈希、报告 |
 | `test_cli.py` | demo / generate / plan / verify、退出码、只读 preview、重复生成 |
+| `test_campaign_counts.py` | 紧凑计数 manifest 与 80 行原始事件重算一致性 |
+| `test_campaign_design.py` | 合成设计规则的单调触达与排他约束（独立测试证据，非分析 oracle） |
+| `test_campaign_contracts.py` | ITT / 触达第一阶段 / 缺失结果 0..1 区间、两份合同裁决、家庭指派一致性、控制组触达、零或负第一阶段、单调/排他证据缺失、重复与未知客户、身份改动改变裁决 |
+| `test_campaign_cli.py` | 合成试验裁决 CLI 的文本与 JSON 输出、损坏 fixture 拒绝 |
 | `test_golden.py` | 演示蓝图的内容指纹和表数据摘要基线 |
 
 共享 fixture 在 `tests/conftest.py`：
@@ -77,6 +83,16 @@ python -m synthlab plan --spec fixtures/demo/dataset.yaml
   `453cc399fd804aefc0bc66d97cdad2e89c77a4296b0a55d115f39852f1867401`；
 - verifier 输出 `41 passed, 0 failed`；
 - `out/demo/verification.json` 的 `status` 为 `pass`。
+
+合成试验合同裁决手工检查：
+
+```bash
+python -m synthlab.campaign_audit --trial fixtures/campaign/trial.json
+```
+
+预期：ITT 区间 `[0.2750, 0.3000]`、触达第一阶段 `0.7250`；`offer_rollout`
+决策 `reject`，`reached_only` complier 区间约 `[0.3793, 0.4138]` 决策
+`approve`；朴素 exposed/unexposed 关联仅作反例对照展示。
 
 预览手工检查：
 
