@@ -1,0 +1,142 @@
+{
+  "orders": [
+    {
+      "order_id": "o-100",
+      "status": "paid",
+      "default_contract": "retain_promotion",
+      "promotion": {"threshold": "60.00", "discount": "5.00"}
+    },
+    {
+      "order_id": "o-200",
+      "status": "shipped",
+      "default_contract": "retain_promotion"
+    },
+    {
+      "order_id": "o-300",
+      "status": "paid",
+      "default_contract": "retain_promotion"
+    },
+    {
+      "order_id": "o-400",
+      "status": "paid",
+      "default_contract": "reprice_kept",
+      "promotion": {"threshold": "60.00", "discount": "5.00"}
+    },
+    {
+      "order_id": "o-500",
+      "status": "paid",
+      "default_contract": "retain_promotion",
+      "promotion": {"threshold": "20.00", "discount": "1.00"}
+    },
+    {
+      "order_id": "o-600",
+      "status": "paid",
+      "default_contract": "retain_promotion",
+      "promotion": {"threshold": "20.00", "discount": "1.00"}
+    },
+    {
+      "order_id": "o-700",
+      "status": "pending",
+      "default_contract": "retain_promotion"
+    }
+  ],
+  "items": [
+    {"item_id": "i-100a", "order_id": "o-100", "product_id": "sku-x",
+     "quantity": 1, "unit_gross": "25.00", "gross_amount": "25.00",
+     "line_discount": "0.00", "line_total": "23.08", "tax_amount": "1.85"},
+    {"item_id": "i-100b", "order_id": "o-100", "product_id": "sku-y",
+     "quantity": 1, "unit_gross": "40.00", "gross_amount": "40.00",
+     "line_discount": "0.00", "line_total": "36.92", "tax_amount": "2.95"},
+
+    {"item_id": "i-200", "order_id": "o-200", "product_id": "sku-z",
+     "quantity": 3, "unit_gross": "4.00", "gross_amount": "12.00",
+     "line_discount": "2.00", "line_total": "10.00", "tax_amount": "0.81"},
+
+    {"item_id": "i-300", "order_id": "o-300", "product_id": "sku-x",
+     "quantity": 1, "unit_gross": "18.00", "gross_amount": "18.00",
+     "line_discount": "0.00", "line_total": "18.00", "tax_amount": "1.44"},
+
+    {"item_id": "i-400a", "order_id": "o-400", "product_id": "sku-x",
+     "quantity": 1, "unit_gross": "25.00", "gross_amount": "25.00",
+     "line_discount": "0.00", "line_total": "23.08", "tax_amount": "1.85"},
+    {"item_id": "i-400b", "order_id": "o-400", "product_id": "sku-y",
+     "quantity": 1, "unit_gross": "40.00", "gross_amount": "40.00",
+     "line_discount": "0.00", "line_total": "36.92", "tax_amount": "2.95"},
+
+    {"item_id": "i-500", "order_id": "o-500", "product_id": "sku-w",
+     "quantity": 2, "unit_gross": "12.00", "gross_amount": "24.00",
+     "line_discount": "0.00", "line_total": "23.00", "tax_amount": "1.84"},
+
+    {"item_id": "i-600", "order_id": "o-600", "product_id": "sku-v",
+     "quantity": 2, "unit_gross": "12.00", "gross_amount": "24.00",
+     "line_discount": "0.00", "line_total": "23.00", "tax_amount": "1.84"},
+
+    {"item_id": "i-700", "order_id": "o-700", "product_id": "sku-u",
+     "quantity": 1, "unit_gross": "30.00", "gross_amount": "30.00",
+     "line_discount": "0.00", "line_total": "30.00", "tax_amount": "2.40"}
+  ],
+  "payments": [
+    {"payment_id": "p-100-1", "order_id": "o-100", "captured_amount": "30.00"},
+    {"payment_id": "p-100-2", "order_id": "o-100", "captured_amount": "34.80"},
+
+    {"payment_id": "p-200", "order_id": "o-200", "captured_amount": "10.81"},
+
+    {"payment_id": "p-300", "order_id": "o-300", "captured_amount": "19.44"},
+
+    {"payment_id": "p-400-1", "order_id": "o-400", "captured_amount": "30.00"},
+    {"payment_id": "p-400-2", "order_id": "o-400", "captured_amount": "34.80"},
+
+    {"payment_id": "p-500-1", "order_id": "o-500", "captured_amount": "8.00"},
+    {"payment_id": "p-500-2", "order_id": "o-500", "captured_amount": "16.84"},
+
+    {"payment_id": "p-600-1", "order_id": "o-600", "captured_amount": "12.42"},
+    {"payment_id": "p-600-2", "order_id": "o-600", "captured_amount": "12.42"},
+
+    {"payment_id": "p-700", "order_id": "o-700", "captured_amount": "32.40"}
+  ],
+  "prior_refunds": [
+    {"refund_id": "h-500-1", "order_id": "o-500", "item_id": "i-500",
+     "quantity": 1, "route": "cash", "promotion_contract": "retain_promotion",
+     "amount": "12.42"}
+  ],
+  "requests": [
+    {"request_id": "q-100-1", "order_id": "o-100", "item_id": "i-100a",
+     "quantity": 1, "route": "cash"},
+    {"request_id": "q-100-2", "order_id": "o-100", "item_id": "i-100b",
+     "quantity": 1, "route": "cash"},
+
+    {"request_id": "q-200-1", "order_id": "o-200", "item_id": "i-200",
+     "quantity": 1, "route": "cash"},
+    {"request_id": "q-200-2", "order_id": "o-200", "item_id": "i-200",
+     "quantity": 1, "route": "store_credit"},
+    {"request_id": "q-200-3", "order_id": "o-200", "item_id": "i-200",
+     "quantity": 1, "route": "cash"},
+    {"request_id": "q-200-4", "order_id": "o-200", "item_id": "i-200",
+     "quantity": 1, "route": "cash"},
+
+    {"request_id": "q-300-1", "order_id": "o-300", "item_id": "i-300",
+     "quantity": 1, "route": "cash"},
+
+    {"request_id": "q-400-1", "order_id": "o-400", "item_id": "i-400a",
+     "quantity": 1, "route": "cash"},
+    {"request_id": "q-400-2", "order_id": "o-400", "item_id": "i-400b",
+     "quantity": 1, "route": "cash"},
+
+    {"request_id": "q-500-1", "order_id": "o-500", "item_id": "i-500",
+     "quantity": 1, "route": "cash", "instrument_id": "p-500-1"},
+    {"request_id": "q-500-2", "order_id": "o-500", "item_id": "i-500",
+     "quantity": 1, "route": "cash"},
+
+    {"request_id": "q-600-1", "order_id": "o-600", "item_id": "i-600",
+     "quantity": 1, "route": "store_credit"},
+    {"request_id": "q-600-r1", "order_id": "o-600", "op": "revoke",
+     "target_request_id": "q-600-1"},
+    {"request_id": "q-600-2", "order_id": "o-600", "item_id": "i-600",
+     "quantity": 1, "route": "cash"},
+
+    {"request_id": "q-700-1", "order_id": "o-700", "item_id": "i-700",
+     "quantity": 1, "route": "cash"},
+    {"request_id": "q-700-x", "order_id": "o-700", "item_id": "i-700",
+     "quantity": 2, "route": "cash"}
+  ]
+}

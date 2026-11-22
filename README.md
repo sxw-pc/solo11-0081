@@ -5,6 +5,19 @@
 `python -m synthlab.commerce_audit --spec fixtures/demo/dataset.yaml` 会报告当前
 独立列生成的实际不一致；此审计不修改数据或生成器。
 
+退货受理在 `synthlab/return_intake.py` 之外增加下游经济权益结算
+（`synthlab/settlement.py`）。旧合同 `fixtures/returns/intake.json` 的按行
+`refund_cap` 输出保持不变；新合同 `fixtures/returns/settlement.json` 携带完全
+虚构的原成交快照（多次捕获的支付工具、订单级满减、行级折扣、逐行税、历史退款），
+运行
+`python -m synthlab.return_intake --fixture fixtures/returns/settlement.json`
+先经 `commerce_audit.audit_settlement_snapshot` 独立审计原成交合计，再由结算
+台账输出每项请求的现金指令、商店信用负债或拒绝原因。金额一律整数分/Decimal
+精确运算（`synthlab/money.py`），禁止 binary float；余分按稳定单位序号分配，
+任意合法退货顺序的累计退款不超过原捕获额，整行退完恰好分完整行金额。两个独立
+授权合同 `retain_promotion` 与 `reprice_kept` 在首次结算时固定，同单不可切换。
+`--ledger-out` 可写出可审计的台账 JSON。
+
 一个**纯本地、完全离线、声明式、确定性的多表合成数据生成与校验工作台**。
 
 造数台读取一份 YAML 数据集蓝图，先做结构与引用完整性校验，再按依赖拓扑逐表生成数据，执行约束和边界覆盖检查，导出 SQLite / CSV / JSONL，并生成 manifest、数据说明书和独立校验报告。它适合开发、测试、演示和回归场景，也可以作为 Coding Agent 评测中的离线素材源。
